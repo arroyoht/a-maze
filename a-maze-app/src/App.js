@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Maze from './components/Maze'
+import MazeViewer from './components/MazeViewer'
 
 class App extends Component {
   render() {
     return (
-      <Maze width="500" height="500" />
+      <MazeViewer width="500" height="500" />
     );
   }
 }
