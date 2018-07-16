@@ -57,7 +57,7 @@ export class Maze {
     }
 
     /* Backtracker Algorithm */
-    
+
     stack = [];
 
     recursiveBacktracker(callback){
@@ -81,6 +81,8 @@ export class Maze {
     }
 
     backtracker(callback){
+        this.grid.reset();
+
         this.stack.push({
             directions: this.getRandomDirections(),
             row: 0,
@@ -97,22 +99,32 @@ export class Maze {
 
     step(){
         var currentCell = this.stack[this.stack.length - 1];
-
         var direction = currentCell.directions.pop();
-        if(direction){
+        var visitedNext = false;
+        
+        while(direction && !visitedNext){
+            
             var nextCellRow = currentCell.row + this.dy[direction];
             var nextCellColumn = currentCell.column + this.dx[direction];
 
             if(this.isCellValid(nextCellRow, nextCellColumn)){
+                
+                visitedNext = true;
+                
                 this.carvePassage(currentCell.row, currentCell.column, nextCellRow, nextCellColumn, direction);
+                
                 this.stack.push({
                     directions: this.getRandomDirections(),
                     row: nextCellRow,
                     column: nextCellColumn
                 });
             }
+            else {
+                direction = currentCell.directions.pop();
+            }
         }
-        else {
+
+        if(!direction){
             this.stack.pop();
         }
     }
