@@ -38,7 +38,7 @@ class MazeViewer extends Component {
     }
 
     runBacktrackingMazeGenerator(){
-        this.maze.backtracker(this.drawMaze.bind(this));
+        this.maze.growingTree(2, this.drawMaze.bind(this));
     }
 
     drawMaze(){

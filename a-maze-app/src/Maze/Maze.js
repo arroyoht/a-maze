@@ -59,6 +59,7 @@ export class Maze {
     /* Backtracker Algorithm */
 
     stack = [];
+    currentCell;
 
     recursiveBacktracker(callback){
         this.grid.reset();
@@ -80,7 +81,7 @@ export class Maze {
         });    
     }
 
-    backtracker(callback){
+    growingTree(type, callback){
         this.grid.reset();
 
         this.stack.push({
@@ -90,19 +91,36 @@ export class Maze {
         });
 
         var interval = setInterval(() => {
-            this.step();
+            this.step(type);
             callback();
             
             if(this.stack.length === 0) clearInterval(interval);
         }, 1);
     }
 
-    step(){
-        var currentCell = this.stack[this.stack.length - 1];
+    // TODO: Remove algorithms from maze class and make them parametrized
+    // TODO: Refine definition of growing tree type
+    getGrowingTreeCell(type){
+        if(type === 1){
+            return this.stack[this.stack.length - 1];
+        }
+        else {
+            if(this.stack.indexOf(this.currentCell) > -1) return this.currentCell;
+            
+            let randomIndex = Math.floor(Math.random() * (this.stack.length - 1));
+            this.currentCell = this.stack[randomIndex];
+            return this.currentCell;
+        }
+    }
+
+    //step type indicates the type of decision it will use to choose the next cell to expand
+    step(type){
+        var currentCell = this.getGrowingTreeCell(type);
+
         var direction = currentCell.directions.pop();
         var visitedNext = false;
         
-        while(direction && !visitedNext){
+        while(direction && (!visitedNext || type === 2)){
             
             var nextCellRow = currentCell.row + this.dy[direction];
             var nextCellColumn = currentCell.column + this.dx[direction];
@@ -127,7 +145,12 @@ export class Maze {
 
         if(!direction){
             this.grid.cells[currentCell.row][currentCell.column].state = 2;
-            this.stack.pop();
+            if(type === 1){
+                this.stack.pop();
+            }
+            else {
+                this.stack.splice(this.stack.indexOf(currentCell), 1);
+            }
         }
     }
 }
