@@ -32,12 +32,12 @@ export class Maze {
     isCellValid(row, column){
         return (row >= 0 && row < this.grid.rows) &&
             (column >= 0 && column < this.grid.columns) &&
-            this.grid.cells[row][column] === 0;
+            this.grid.cells[row][column].value === 0;
     }
 
     carvePassage(i, j, x, y, direction){
-        this.grid.cells[i][j] |= direction;
-        this.grid.cells[x][y] |= this.opposite[direction];
+        this.grid.cells[i][j].value |= direction;
+        this.grid.cells[x][y].value |= this.opposite[direction];
     }
 
     getRandomDirections(){
@@ -109,6 +109,7 @@ export class Maze {
 
             if(this.isCellValid(nextCellRow, nextCellColumn)){
                 
+                this.grid.cells[nextCellRow][nextCellColumn].state = 1;
                 visitedNext = true;
                 
                 this.carvePassage(currentCell.row, currentCell.column, nextCellRow, nextCellColumn, direction);
@@ -125,6 +126,7 @@ export class Maze {
         }
 
         if(!direction){
+            this.grid.cells[currentCell.row][currentCell.column].state = 2;
             this.stack.pop();
         }
     }

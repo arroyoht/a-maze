@@ -1,12 +1,22 @@
 export class Grid {
 
+    CELL_STATE = {
+        RAW: 0,
+        VISITED: 1,
+        DONE: 2
+    }
+
     constructor(rows, columns){
         this.columns = columns;
         this.rows = rows; 
-        this.cells = Array(this.rows).fill().map(() => Array(this.columns).fill(0));
+        this.reset()
     }
 
     reset(){
-        this.cells = Array(this.rows).fill().map(() => Array(this.columns).fill(0));
+        this.cells = Array(this.rows).fill().map(() => 
+            Array(this.columns).fill().map(() => {
+                return {value:0, state: 0};
+            })
+        );
     }
 }

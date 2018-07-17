@@ -3,7 +3,7 @@ html, body {
 }
 
 html{
-  background-color: black;
+  background-color: #111111;
 }
 
 body {
@@ -13,9 +13,9 @@ body {
 }
 
 button {
-  background-color: #787878;
+  background-color: #555555;
   border: none;
-  color: white;
+  color: #aaaaaa;
   border-radius: 5px;
   padding: 10px;
   outline: none;

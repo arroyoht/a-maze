@@ -42,25 +42,56 @@ class MazeViewer extends Component {
     }
 
     drawMaze(){
-        this.setBackgroundColor('black');
+        this.setBackgroundColor('#111111');
 
+        // Paint visited cells
         this.canvasContext.beginPath();
+        this.canvasContext.fillStyle = '#3d9970';
+        this.maze.grid.cells.forEach((row, i) => {
+            row.forEach((cell, j) => {
+                if(cell.state === 1){       
+                    this.paintCell(i, j, cell);
+                }
+            });
+        });
+        this.canvasContext.fill();
 
+        // Paint done cells
+        this.canvasContext.beginPath();
+        this.canvasContext.fillStyle = '#ad5203';
+        this.maze.grid.cells.forEach((row, i) => {
+            row.forEach((cell, j) => {
+                if(cell.state === 2){     
+                    this.paintCell(i, j, cell);
+                }
+            });
+        });
+        this.canvasContext.fill();
+
+        // Render walls
+        this.canvasContext.beginPath();
         this.maze.grid.cells.forEach((row, i) => {
             row.forEach((cell, j) => {
                 this.renderCell(i, j, cell);
             });
         });
-
         this.canvasContext.stroke();
     }
 
-    renderCell(row, column, cellValue) {
+    paintCell(row, column){
+        var x = column * this.cellSize;
+        var y = row * this.cellSize;
+        var ctx = this.canvasContext;
+        ctx.rect(x, y, this.cellSize, this.cellSize);
+    }
+
+    renderCell(row, column, cell) {
+        var cellValue = cell.value;
         var ctx = this.canvasContext;
         var x = column * this.cellSize;
         var y = row * this.cellSize;
 
-        ctx.strokeStyle = 'white'
+        ctx.strokeStyle = '#111111';
         ctx.lineWidth = 1;
 
         // North wall
