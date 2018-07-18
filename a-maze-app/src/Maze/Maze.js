@@ -56,100 +56,11 @@ export class Maze {
         return array;
     }
 
-    /* Backtracker Algorithm */
-
-    stack = [];
-    currentCell;
-
-    recursiveBacktracker(callback){
-        this.grid.reset();
-        this.carvePassagesFrom(0, 0);
-        callback();
-    }
-
-    carvePassagesFrom(row, column){
-        var directions = this.getRandomDirections();
-
-        directions.forEach(direction => {    
-            var cellRow = row + this.dy[direction];
-            var cellColumn = column + this.dx[direction];
-
-            if(this.isCellValid(cellRow, cellColumn)){
-                this.carvePassage(row, column, cellRow, cellColumn, direction);
-                this.carvePassagesFrom(cellRow, cellColumn);
-            }
-        });    
-    }
-
-    growingTree(type, callback){
-        this.grid.reset();
-
-        this.stack.push({
+    getRandomCell(){
+        return {
             directions: this.getRandomDirections(),
-            row: 0,
-            column: 0
-        });
-
-        var interval = setInterval(() => {
-            this.step(type);
-            if(this.stack.length === 0) clearInterval(interval);
-            callback();
-        }, 1);
-    }
-
-    // TODO: Remove algorithms from maze class and make them parametrized
-    // TODO: Refine definition of growing tree type
-    getGrowingTreeCell(type){
-        if(type === 1){
-            return this.stack[this.stack.length - 1];
-        }
-        else {
-            if(this.stack.indexOf(this.currentCell) > -1) return this.currentCell;
-            
-            let randomIndex = Math.floor(Math.random() * (this.stack.length - 1));
-            this.currentCell = this.stack[randomIndex];
-            return this.currentCell;
-        }
-    }
-
-    //step type indicates the type of decision it will use to choose the next cell to expand
-    step(type){
-        var currentCell = this.getGrowingTreeCell(type);
-
-        var direction = currentCell.directions.pop();
-        var visitedNext = false;
-        
-        while(direction && (!visitedNext || type === 2)){
-            
-            var nextCellRow = currentCell.row + this.dy[direction];
-            var nextCellColumn = currentCell.column + this.dx[direction];
-
-            if(this.isCellValid(nextCellRow, nextCellColumn)){
-                
-                this.grid.cells[nextCellRow][nextCellColumn].state = 1;
-                visitedNext = true;
-                
-                this.carvePassage(currentCell.row, currentCell.column, nextCellRow, nextCellColumn, direction);
-                
-                this.stack.push({
-                    directions: this.getRandomDirections(),
-                    row: nextCellRow,
-                    column: nextCellColumn
-                });
-            }
-            else {
-                direction = currentCell.directions.pop();
-            }
-        }
-
-        if(!direction){
-            this.grid.cells[currentCell.row][currentCell.column].state = 2;
-            if(type === 1){
-                this.stack.pop();
-            }
-            else {
-                this.stack.splice(this.stack.indexOf(currentCell), 1);
-            }
-        }
+            row: Math.floor(Math.random() * (this.grid.rows - 1)),
+            column: Math.floor(Math.random() * (this.grid.columns - 1))
+        };
     }
 }

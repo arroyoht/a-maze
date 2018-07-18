@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Maze } from '../Maze/Maze.js'
+import { Algorithm } from '../Maze/algorithms/Algorithm.js'
 import './MazeViewer.css';
 
 class MazeViewer extends Component {
@@ -11,9 +12,10 @@ class MazeViewer extends Component {
         this.cellSize = 10;
 
         this.maze = new Maze(this.height / this.cellSize, this.width / this.cellSize);
+        this.algorithm = new Algorithm(this.maze)
     }
 
-    render () {
+    render() {
         return (
             <div className="maze">
                 <div className="title">
@@ -21,7 +23,15 @@ class MazeViewer extends Component {
                 </div>
                 <canvas id="mazeCanvas" width={this.width} height={this.height}/>
                 <div className="action">
-                    <button  onClick={this.runBacktrackingMazeGenerator.bind(this)}> a-Maze me </button>
+                    <span className="btn">
+                        <button onClick={this.runStep.bind(this)}> Step </button>
+                    </span>
+                    <span className="btn">
+                        <button onClick={this.run.bind(this)}> Run </button>
+                    </span>
+                    <span className="btn">
+                        <button onClick={this.pause.bind(this)}> Pause </button>
+                    </span>
                 </div>
             </div>
         );
@@ -29,7 +39,7 @@ class MazeViewer extends Component {
 
     componentDidMount(){
         this.canvasContext = document.getElementById("mazeCanvas").getContext("2d");
-        this.runBacktrackingMazeGenerator();
+        this.run();
     }
 
     setBackgroundColor(color){
@@ -37,8 +47,16 @@ class MazeViewer extends Component {
         this.canvasContext.fillRect(0, 0, this.canvasContext.canvas.width, this.canvasContext.canvas.height);
     }
 
-    runBacktrackingMazeGenerator(){
-        this.maze.growingTree(2, this.drawMaze.bind(this));
+    run(){
+        this.algorithm.startRun(this.drawMaze.bind(this));
+    }
+
+    runStep(){
+        this.algorithm.startStep(this.drawMaze.bind(this));
+    }
+
+    pause(){
+        this.algorithm.stop();
     }
 
     drawMaze(){

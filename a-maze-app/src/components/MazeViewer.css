@@ -16,3 +16,7 @@ div.maze div {
     margin: auto;
     padding: 10px
 }
+
+div.maze .action .btn {
+    padding: 10px;
+}
