@@ -40,6 +40,7 @@ class MazeViewer extends Component {
 
     componentDidMount(){
         this.canvasContext = document.getElementById("mazeCanvas").getContext("2d");
+        this.runner.onUpdate(this.drawMaze.bind(this));
         this.run();
     }
 
@@ -49,11 +50,11 @@ class MazeViewer extends Component {
     }
 
     run(){
-        this.runner.startRun(this.drawMaze.bind(this));
+        this.runner.startRun();
     }
 
     runStep(){
-        this.runner.startStep(this.drawMaze.bind(this));
+        this.runner.startStep();
     }
 
     pause(){

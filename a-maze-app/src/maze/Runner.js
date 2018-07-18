@@ -1,24 +1,35 @@
+import { Emmiter } from './Emmiter';
+
 export class Runner {
+
+    events = {
+        FINISH: 'finish',
+        UPDATE: 'update'
+    }
 
     constructor(worker){
         this.runnerId = null;
         this.worker = worker;
+        this.emmiter = new Emmiter();
         this.speed = 1;
     }
 
-    startStep(callback){
+    startStep(){
         if(this.runnerId || this.worker.done) return;
         this.worker.step();
-        if(this.isCallback(callback)) callback();
+        this.emmiter.emit(this.events.UPDATE);
     }
 
-    startRun(callback){
+    startRun(){
         if(this.runnerId || this.worker.done) this.reset();
         
         this.runnerId = setInterval(() => {
-            if(!this.worker.step()) this.stop();
-            if(this.isCallback(callback)) callback();
-        }, this.speed);
+            if(!this.worker.step()) {
+                this.stop();
+                this.emmiter.emit(this.events.FINISH);
+            } else { this.emmiter.emit(this.events.UPDATE); }
+        }, 
+        this.speed);
     }
 
     stop(){
@@ -31,7 +42,11 @@ export class Runner {
         this.worker.reset();
     }
 
-    isCallback(callback){
-        return callback && typeof callback === "function";
+    onUpdate(callback){
+        return this.emmiter.listen(this.events.UPDATE, callback);
+    }
+
+    onFinish(callback){
+        return this.emmiter.listen(this.events.FINISH, callback);
     }
 }
