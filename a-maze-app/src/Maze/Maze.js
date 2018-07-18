@@ -92,9 +92,8 @@ export class Maze {
 
         var interval = setInterval(() => {
             this.step(type);
-            callback();
-            
             if(this.stack.length === 0) clearInterval(interval);
+            callback();
         }, 1);
     }
 
