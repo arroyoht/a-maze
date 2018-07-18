@@ -63,4 +63,14 @@ export class Maze {
             column: Math.floor(Math.random() * (this.grid.columns - 1))
         };
     }
+
+    markCell(row, column, state){
+        this.grid.cells[row][column].state = state;
+    }
+}
+
+export const cellState = {
+    UNTOUCHED: 0,
+    TOUCHED: 1,
+    DONE: 2
 }

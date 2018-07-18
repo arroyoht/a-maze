@@ -1,11 +1,4 @@
 export class Grid {
-
-    CELL_STATE = {
-        RAW: 0,
-        VISITED: 1,
-        DONE: 2
-    }
-
     constructor(rows, columns){
         this.columns = columns;
         this.rows = rows; 

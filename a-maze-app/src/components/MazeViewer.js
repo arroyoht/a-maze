@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Maze } from '../Maze/Maze.js'
-import { Algorithm } from '../Maze/algorithms/Algorithm.js'
+import { Maze } from '../maze/Maze.js'
+import { Runner } from '../maze/Runner.js';
+import { GrowingTree, strategy } from '../maze/algorithms/GrowingTree.js'
 import './MazeViewer.css';
 
 class MazeViewer extends Component {
@@ -12,7 +13,7 @@ class MazeViewer extends Component {
         this.cellSize = 10;
 
         this.maze = new Maze(this.height / this.cellSize, this.width / this.cellSize);
-        this.algorithm = new Algorithm(this.maze)
+        this.runner = new Runner(new GrowingTree(this.maze, strategy.RANDOM));
     }
 
     render() {
@@ -48,15 +49,15 @@ class MazeViewer extends Component {
     }
 
     run(){
-        this.algorithm.startRun(this.drawMaze.bind(this));
+        this.runner.startRun(this.drawMaze.bind(this));
     }
 
     runStep(){
-        this.algorithm.startStep(this.drawMaze.bind(this));
+        this.runner.startStep(this.drawMaze.bind(this));
     }
 
     pause(){
-        this.algorithm.stop();
+        this.runner.stop();
     }
 
     drawMaze(){

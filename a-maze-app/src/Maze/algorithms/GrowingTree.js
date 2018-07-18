@@ -1,8 +1,11 @@
+import { cellState } from '../Maze.js';
+
 export class GrowingTree {
     
     constructor(maze, strategy){
         this.maze = maze;
         this.strategy = strategy;
+
         this.reset();
     }
 
@@ -12,25 +15,23 @@ export class GrowingTree {
         this.done = false;
     }
 
-    // TODO: Refine
     step(){
         var currentCell = this.nextCell();
 
-        if(!currentCell) return false;
+        if(!currentCell) return false;        
 
-        var direction = currentCell.directions.pop();
         var visitedNext = false;
-        
+        var direction = currentCell.directions.pop();
+
         while(direction && (!visitedNext || this.strategy === strategy.RANDOM)){
             
             var nextCellRow = currentCell.row + this.maze.dy[direction];
             var nextCellColumn = currentCell.column + this.maze.dx[direction];
 
             if(this.maze.isCellValid(nextCellRow, nextCellColumn)){
-                
-                this.maze.grid.cells[nextCellRow][nextCellColumn].state = 1;
                 visitedNext = true;
-                
+
+                this.maze.markCell(nextCellRow, nextCellColumn, cellState.TOUCHED);
                 this.maze.carvePassage(currentCell.row, currentCell.column, nextCellRow, nextCellColumn, direction);
                 
                 this.stack.push({
@@ -45,13 +46,8 @@ export class GrowingTree {
         }
 
         if(!direction){
-            this.maze.grid.cells[currentCell.row][currentCell.column].state = 2;
-            if(this.strategy === strategy.NEWEST){
-                this.stack.pop();
-            }
-            else {
-                this.stack.splice(this.stack.indexOf(currentCell), 1);
-            }
+            this.maze.markCell(currentCell.row, currentCell.column, cellState.DONE);
+            this.stack.splice(this.stack.indexOf(currentCell), 1);
         }
 
         return true;
