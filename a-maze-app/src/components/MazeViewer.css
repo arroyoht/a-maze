@@ -6,13 +6,10 @@ div.maze {
 
 div.maze canvas {
     margin: auto;
+    width: auto;
 }
 
-div.maze .title {
-    color: #aaaaaa;
-}
-
-div.maze div {
+div.maze div.section {
     margin: auto;
     padding: 10px
 }

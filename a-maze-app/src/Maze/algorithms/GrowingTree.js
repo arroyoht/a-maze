@@ -1,7 +1,7 @@
 import { cellState } from '../Maze.js';
 
 export class GrowingTree {
-    
+
     constructor(maze, strategy){
         this.maze = maze;
         this.strategy = strategy;
