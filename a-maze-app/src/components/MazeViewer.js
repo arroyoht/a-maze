@@ -8,9 +8,20 @@ class MazeViewer extends Component {
 
     constructor(props){
         super(props);
-        this.height = props.height;
-        this.width = props.width;
-        this.cellSize = 10;
+        this.height = parseInt(props.height);
+        this.width = parseInt(props.width);
+        this.cellSize = parseInt(props.cellSize);
+
+        this.options = props.options || {}; 
+        let colors = this.options.colors || {};
+
+        this.colors = {
+            touched: colors.touched || '#3D9970',
+            untouched: colors.untouched || '#111111',
+            done: colors.done || '#AD5203',
+            background: colors.background || '#111111',
+            wall: colors.wall || '#111111'
+        }
 
         this.maze = new Maze(this.height / this.cellSize, this.width / this.cellSize);
         this.runner = new Runner(new GrowingTree(this.maze, strategy.RANDOM));
@@ -20,18 +31,24 @@ class MazeViewer extends Component {
         return (
             <div className="maze">
                 <div className="title">
-                    <h3>A-Maze</h3>
+                    <h4>A-Maze</h4>
                 </div>
                 <canvas id="mazeCanvas" width={this.width} height={this.height}/>
                 <div className="action">
                     <span className="btn">
-                        <button onClick={this.runStep.bind(this)}> Step </button>
+                        <button onClick={this.runStep.bind(this)} className="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect mdl">
+                            <i className="material-icons">skip_next</i>
+                        </button>
                     </span>
                     <span className="btn">
-                        <button onClick={this.run.bind(this)}> Run </button>
+                        <button onClick={this.run.bind(this)} className="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect mdl">
+                            <i className="material-icons">play_arrow</i>
+                        </button>
                     </span>
                     <span className="btn">
-                        <button onClick={this.pause.bind(this)}> Pause </button>
+                        <button onClick={this.pause.bind(this)} className="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect mdl">
+                            <i className="material-icons">pause</i>
+                        </button>
                     </span>
                 </div>
             </div>
@@ -62,11 +79,11 @@ class MazeViewer extends Component {
     }
 
     drawMaze(){
-        this.setBackgroundColor('#111111');
+        this.setBackgroundColor(this.colors.background);
 
         // Paint visited cells
         this.canvasContext.beginPath();
-        this.canvasContext.fillStyle = '#3d9970';
+        this.canvasContext.fillStyle = this.colors.touched;
         this.maze.grid.cells.forEach((row, i) => {
             row.forEach((cell, j) => {
                 if(cell.state === 1){       
@@ -78,7 +95,7 @@ class MazeViewer extends Component {
 
         // Paint done cells
         this.canvasContext.beginPath();
-        this.canvasContext.fillStyle = '#ad5203';
+        this.canvasContext.fillStyle = this.colors.done;
         this.maze.grid.cells.forEach((row, i) => {
             row.forEach((cell, j) => {
                 if(cell.state === 2){     
@@ -89,6 +106,9 @@ class MazeViewer extends Component {
         this.canvasContext.fill();
 
         // Render walls
+        this.canvasContext.strokeStyle = this.colors.wall;
+        this.canvasContext.lineWidth = 1;
+
         this.canvasContext.beginPath();
         this.maze.grid.cells.forEach((row, i) => {
             row.forEach((cell, j) => {
@@ -101,8 +121,8 @@ class MazeViewer extends Component {
     paintCell(row, column){
         var x = column * this.cellSize;
         var y = row * this.cellSize;
-        var ctx = this.canvasContext;
-        ctx.rect(x, y, this.cellSize, this.cellSize);
+
+        this.canvasContext.rect(x, y, this.cellSize, this.cellSize);
     }
 
     renderCell(row, column, cell) {
@@ -110,9 +130,6 @@ class MazeViewer extends Component {
         var ctx = this.canvasContext;
         var x = column * this.cellSize;
         var y = row * this.cellSize;
-
-        ctx.strokeStyle = '#111111';
-        ctx.lineWidth = 1;
 
         // North wall
         if(!(cellValue & this.maze.N)){
