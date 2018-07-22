@@ -2,15 +2,16 @@ import React, { Component } from 'react';
 import { Maze } from '../maze/Maze'
 import { Runner } from '../maze/Runner';
 import { GrowingTree, strategy } from '../maze/algorithms/GrowingTree'
+import { Ellers } from '../maze/algorithms/Ellers'
 import './MazeViewer.css';
 
 class MazeViewer extends Component {
 
     constructor(props){
         super(props);
-        this.height = parseInt(props.height);
-        this.width = parseInt(props.width);
-        this.cellSize = parseInt(props.cellSize);
+        this.height = parseInt(props.height, 10);
+        this.width = parseInt(props.width, 10);
+        this.cellSize = parseInt(props.cellSize, 10);
 
         this.options = props.options || {}; 
         let colors = this.options.colors || {};
@@ -74,7 +75,8 @@ class MazeViewer extends Component {
         this.canvas = document.getElementById("mazeCanvas")
         this.canvasContext = this.canvas.getContext("2d");
 
-        this.runner.onUpdate(this.drawMaze.bind(this));        
+        this.runner.onUpdate(this.drawMaze.bind(this));    
+        //this.runner.onFinish(this.run.bind(this));     
 
         this.run();
     }
