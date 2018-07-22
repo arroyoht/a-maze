@@ -10,9 +10,9 @@ export class Ellers {
     reset() {
         this.maze.grid.reset();
         this.sets = [];
-        this.done = false;
-        this.currentCell = { row: 0, column: -1 };
         this.setStack = [];
+        this.currentCell = { row: 0, column: -1 };
+        this.done = false;
     }
 
     connectSetVertically(set, row){
@@ -52,7 +52,7 @@ export class Ellers {
             else{
                 this.maze.markCell(currentCell.row, currentCell.column, cellState.TOUCHED);
             }
-            
+
             if (!currentSet) {
                 currentSet = [currentCell];
                 this.sets.push(currentSet);

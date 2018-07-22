@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { Maze } from '../maze/Maze'
-import { Runner } from '../maze/Runner';
+import { Runner } from '../maze/Runner'; 
 import { GrowingTree, strategy } from '../maze/algorithms/GrowingTree'
 import { Ellers } from '../maze/algorithms/Ellers'
+import { Kruskal } from '../maze/algorithms/Kruskal'
+import { Controls } from './Controls';
 import './MazeViewer.css';
 
 class MazeViewer extends Component {
@@ -23,62 +25,87 @@ class MazeViewer extends Component {
             background: colors.background || '#111111',
             wall: colors.wall || '#111111'
         }
-
-        this.maze = new Maze(this.height / this.cellSize, this.width / this.cellSize);
-        this.runner = new Runner(new GrowingTree(this.maze, strategy.NEWEST));
+        
+        this.state = {
+            algorithm: '0'
+        };
     }
 
     render() {
         return (
-            <div className="maze">
-                <div className="title section">
-                    <h4>A-Maze</h4>
-                </div>
-                <canvas id="mazeCanvas" width={this.width} height={this.height} className="demo-card-wide mdl-card mdl-shadow--2dp" />
-                <div className="action section">
-                    <span className="btn">
-                        <button onClick={this.runStep.bind(this)} className="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect mdl">
-                            <i className="material-icons">skip_next</i>
-                        </button>
-                    </span>
-                    <span className="btn">
-                        <button onClick={this.run.bind(this)} className="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect mdl">
-                            <i className="material-icons">play_arrow</i>
-                        </button>
-                    </span>
-                    <span className="btn">
-                        <button onClick={this.pause.bind(this)} className="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect mdl">
-                            <i className="material-icons">pause</i>
-                        </button>
-                    </span>
-                    <span className="btn">
-                        <button onClick={this.record.bind(this)} style={{'background-color': '#ff4136'}} className="mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-js-ripple-effect mdl">
-                            <i className="material-icons">fiber_manual_record</i>
-                        </button>
-                    </span>
-                </div>
-                <div className="control-panel section">
-                    <form action="#">
-                        <div className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded is-dirty">
-                            <select className="mdl-textfield__input" type="text" id="sample1">
-                                <option value="1">Growing Tree</option>
-                            </select>
-                            <label className="mdl-textfield__label" for="sample3">Algorithm</label>
-                        </div>
-                    </form>
+            <div style={{display: 'flex'}}>
+                <div className="maze">
+                    <div className="title section">
+                        <h4>A-Maze</h4>
+                    </div>
+                    <div className="control-panel section">
+                        <form action="#">
+                            <div className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded is-dirty">
+                                <select value={this.state.algorithm} onChange={this.onAlgorithmChange.bind(this)} className="mdl-textfield__input" type="text" id="sample1">
+                                    <option value="0">Kruskal's</option>
+                                    <option value="1">Growing Tree - Random</option>
+                                    <option value="2">Growing Tree - Newest</option>
+                                    <option value="3">Eller's</option>
+                                </select>
+                                <label className="mdl-textfield__label" for="sample3">Algorithm</label>
+                            </div>
+                        </form>
+                    </div>
+                    <div className="viewer-body">
+                        <canvas id="mazeCanvas" width={this.width} height={this.height} className="demo-card-wide mdl-card mdl-shadow--2dp" />    
+                        <Controls step={this.runStep.bind(this)}
+                            play={this.run.bind(this)}
+                            pause={this.pause.bind(this)}
+                            record={this.record.bind(this)} >
+                        </Controls>
+                    </div>
                 </div>
             </div>
         );
     }
 
-    componentDidMount(){
-        this.canvas = document.getElementById("mazeCanvas")
-        this.canvasContext = this.canvas.getContext("2d");
+    onAlgorithmChange(e){
+        this.setState({algorithm: e.target.value});
+    }
+
+    componentDidUpdate(prevProps, prevState){
+        if(prevState.algorithm !== this.state.algorithm){
+            this.setAlgorithm(); 
+        }
+    }
+
+    setAlgorithm(){
+        if(this.runner) this.runner.destroy();
+
+        this.maze = new Maze(this.height / this.cellSize, this.width / this.cellSize);
+
+        switch(this.state.algorithm){
+            case '0':
+                this.runner = new Runner(new Kruskal(this.maze));
+                break;
+            case '1':
+                this.runner = new Runner(new GrowingTree(this.maze, strategy.RANDOM));
+                break;
+            case '2': 
+                this.runner = new Runner(new GrowingTree(this.maze, strategy.NEWEST));
+                break;
+            case '3': 
+                this.runner = new Runner(new Ellers(this.maze));
+                break;
+            default:
+                this.runner = new Runner(new GrowingTree(this.maze, strategy.NEWEST));
+                break;
+        }
 
         this.runner.onUpdate(this.drawMaze.bind(this));    
-        //this.runner.onFinish(this.run.bind(this));     
-
+        this.runner.onFinish(this.run.bind(this));     
         this.run();
+    }
+
+    componentDidMount(){
+        this.canvas = document.getElementById("mazeCanvas")
+        this.canvasContext = this.canvas.getContext("2d");        
+        this.setAlgorithm();
     }
 
     run(){

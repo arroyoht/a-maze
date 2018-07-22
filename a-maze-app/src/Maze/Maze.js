@@ -67,6 +67,12 @@ export class Maze {
     markCell(row, column, state){
         this.grid.cells[row][column].state = state;
     }
+
+    walk(row, column, direction) {
+        var dx = -1 * !!(direction & this.W) + 1 * !!(direction & this.E);
+        var dy = -1 * !!(direction & this.N) + 1 * !!(direction & this.S);
+        return {row: row + dy, column: column + dx}
+    }
 }
 
 export const cellState = {

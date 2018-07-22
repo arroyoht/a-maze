@@ -4,12 +4,16 @@ div.maze {
     display: grid;
 }
 
-div.maze canvas {
+div.maze .viewer-body {
     margin: auto;
+    display: grid;
+}
+
+div.maze canvas {
     width: auto;
 }
 
-div.maze div.section {
+div.maze .section {
     margin: auto;
     padding: 10px
 }

@@ -6,14 +6,14 @@ class App extends Component {
 
   options = {
       colors: {
-          background: 'white'
+          background: '#111111'
       }
   }  
   
   render() {
     return (
         <div className="app">
-            <MazeViewer width="600" height="600" cellSize="6" options={this.options}/>
+            <MazeViewer width="500" height="500" cellSize="10" options={this.options}/>
         </div>
     );
   }

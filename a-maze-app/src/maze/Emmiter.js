@@ -28,7 +28,7 @@ export class Emmiter {
         var subjects = this.subjects;
         for (var prop in subjects) {
             if (subjects.hasOwnProperty(prop)) {
-                subjects[prop].dispose();
+                subjects[prop].observers.forEach(observer => observer.unsubscribe());
             }
         }
 

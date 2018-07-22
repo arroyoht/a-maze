@@ -49,4 +49,9 @@ export class Runner {
     onFinish(callback){
         return this.emmiter.listen(this.events.FINISH, callback);
     }
+
+    destroy() {
+        this.stop();
+        this.emmiter.dispose();
+    }
 }
