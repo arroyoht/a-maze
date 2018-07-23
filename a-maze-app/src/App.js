@@ -13,7 +13,7 @@ class App extends Component {
   render() {
     return (
         <div className="app">
-            <MazeViewer width="500" height="500" cellSize="10" options={this.options}/>
+            <MazeViewer width="200" height="200" cellSize="10" options={this.options}/>
         </div>
     );
   }

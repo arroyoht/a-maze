@@ -108,15 +108,19 @@ class MazeViewer extends Component {
         this.canvas = document.getElementById("mazeCanvas")
         this.canvasContext = this.canvas.getContext("2d");     
         
-        this.encoder = new window.GIFEncoder();
-        this.encoder.setRepeat(0);
-        this.encoder.setFrameRate(500);    
+        this.capturer = new window.CCapture({
+            format: 'gif', 
+            workersPath: '/js/', 
+            framerate: 60,
+            verbose: false,
+            display: true
+        });
 
         this.setAlgorithm();
     }
 
     run(){
-        if(this.record) this.encoder.start();
+        if(this.record) this.capturer.start();
 
         this.runner.startRun();
     }
@@ -126,20 +130,15 @@ class MazeViewer extends Component {
     }
 
     pause(){
-        if(this.record){
-            this.record = false;
-            this.encoder.finish();
-            this.encoder.download("maze.gif");
-        }
-
+        this.finish();
         this.runner.stop();
     }
 
     finish(){
         if(this.record){
             this.record = false;
-            this.encoder.finish();
-            this.encoder.download("maze.gif");
+            this.capturer.save();
+            this.capturer.stop();
         }
     }
 
@@ -193,7 +192,7 @@ class MazeViewer extends Component {
         });
         this.canvasContext.stroke();
 
-        if(this.record) this.encoder.addFrame(this.canvasContext);
+        if(this.record) this.capturer.capture(this.canvas);
     }
 
     paintCell(row, column){
