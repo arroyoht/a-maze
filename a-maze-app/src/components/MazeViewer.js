@@ -14,6 +14,7 @@ class MazeViewer extends Component {
         this.height = parseInt(props.height, 10);
         this.width = parseInt(props.width, 10);
         this.cellSize = parseInt(props.cellSize, 10);
+        this.record = false;
 
         this.options = props.options || {}; 
         let colors = this.options.colors || {};
@@ -29,6 +30,7 @@ class MazeViewer extends Component {
         this.state = {
             algorithm: '0'
         };
+
     }
 
     render() {
@@ -56,7 +58,7 @@ class MazeViewer extends Component {
                         <Controls step={this.runStep.bind(this)}
                             play={this.run.bind(this)}
                             pause={this.pause.bind(this)}
-                            record={this.record.bind(this)} >
+                            record={this.startRecording.bind(this)} >
                         </Controls>
                     </div>
                 </div>
@@ -98,17 +100,24 @@ class MazeViewer extends Component {
         }
 
         this.runner.onUpdate(this.drawMaze.bind(this));    
-        this.runner.onFinish(this.run.bind(this));     
+        this.runner.onFinish(this.finish.bind(this));     
         this.run();
     }
 
     componentDidMount(){
         this.canvas = document.getElementById("mazeCanvas")
-        this.canvasContext = this.canvas.getContext("2d");        
+        this.canvasContext = this.canvas.getContext("2d");     
+        
+        this.encoder = new window.GIFEncoder();
+        this.encoder.setRepeat(0);
+        this.encoder.setFrameRate(500);    
+
         this.setAlgorithm();
     }
 
     run(){
+        if(this.record) this.encoder.start();
+
         this.runner.startRun();
     }
 
@@ -117,13 +126,27 @@ class MazeViewer extends Component {
     }
 
     pause(){
+        if(this.record){
+            this.record = false;
+            this.encoder.finish();
+            this.encoder.download("maze.gif");
+        }
+
         this.runner.stop();
     }
 
+    finish(){
+        if(this.record){
+            this.record = false;
+            this.encoder.finish();
+            this.encoder.download("maze.gif");
+        }
+    }
+
     // If possible, record in multiple formats
-    record(){
-        var image = this.canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-        window.location.href = image;
+    startRecording(){
+        this.record = true;
+        this.run();
     }
 
     setBackgroundColor(color){
@@ -169,6 +192,8 @@ class MazeViewer extends Component {
             });
         });
         this.canvasContext.stroke();
+
+        if(this.record) this.encoder.addFrame(this.canvasContext);
     }
 
     paintCell(row, column){
